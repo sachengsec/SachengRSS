@@ -10,25 +10,24 @@ function getAIConfig() {
   const customConfig = loadAIConfig();
   const envKey = import.meta.env.VITE_SILICONFLOW_API_KEY;
 
-  const config = {
-    apiUrl: customConfig?.apiUrl?.trim() || DEFAULT_API_URL,
-    apiKey: customConfig?.apiKey?.trim() || envKey || '',
-    model: customConfig?.model?.trim() || DEFAULT_MODEL,
-  };
+  let apiUrl = customConfig?.apiUrl?.trim() || DEFAULT_API_URL;
+  const apiKey = customConfig?.apiKey?.trim() || envKey || '';
+  const model = customConfig?.model?.trim() || DEFAULT_MODEL;
 
-  // 补全 URL 协议和路径（如果是简写的 host）
-  if (config.apiUrl && !config.apiUrl.startsWith('http')) {
-    config.apiUrl = `https://${config.apiUrl}`;
+  // 补全 URL 协议
+  if (apiUrl && !apiUrl.startsWith('http')) {
+    apiUrl = `https://${apiUrl}`;
   }
-  if (config.apiUrl.endsWith('/')) {
-    config.apiUrl = config.apiUrl.slice(0, -1);
-  }
-  // 如果输入的是 base url (例如 api.siliconflow.cn/v1)，则补充 chat completions 路径
-  if (!config.apiUrl.endsWith('/chat/completions')) {
-    config.apiUrl = `${config.apiUrl}${config.apiUrl.endsWith('/v1') ? '' : '/v1'}/chat/completions`;
+  if (apiUrl.endsWith('/')) {
+    apiUrl = apiUrl.slice(0, -1);
   }
 
-  return config;
+  // 自动补全路径（如果不是完整路径）
+  if (!apiUrl.endsWith('/chat/completions')) {
+    apiUrl = `${apiUrl}${apiUrl.endsWith('/v1') ? '' : '/v1'}/chat/completions`;
+  }
+
+  return { apiUrl, apiKey, model };
 }
 
 // 检查是否配置了 API 密钥
@@ -93,12 +92,17 @@ export async function translateContent(
       return null;
     }
 
+    // 构建请求头（本地 API 不需要 Authorization）
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (config.apiKey) {
+      headers['Authorization'] = `Bearer ${config.apiKey}`;
+    }
+
     const response = await fetchWithTimeout(config.apiUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${config.apiKey}`,
-      },
+      headers,
       body: JSON.stringify({
         model: config.model,
         messages: [

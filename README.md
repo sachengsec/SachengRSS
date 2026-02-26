@@ -2,7 +2,7 @@
 
 一个现代化的 RSS 阅读器，支持 AI 翻译、离线阅读。
 
-> ⚠️ **项目还在开发阶段，会有较多 bug，欢迎提交 issue**
+> ⚠️ **开发预览版：功能尚不完善，欢迎提交 Issue 反馈问题**
 
 [![React](https://img.shields.io/badge/React-19-blue)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)

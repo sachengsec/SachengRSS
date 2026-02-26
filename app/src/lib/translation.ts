@@ -10,22 +10,9 @@ function getAIConfig() {
   const customConfig = loadAIConfig();
   const envKey = import.meta.env.VITE_SILICONFLOW_API_KEY;
 
-  let apiUrl = customConfig?.apiUrl?.trim() || DEFAULT_API_URL;
+  const apiUrl = customConfig?.apiUrl?.trim() || DEFAULT_API_URL;
   const apiKey = customConfig?.apiKey?.trim() || envKey || '';
   const model = customConfig?.model?.trim() || DEFAULT_MODEL;
-
-  // 补全 URL 协议
-  if (apiUrl && !apiUrl.startsWith('http')) {
-    apiUrl = `https://${apiUrl}`;
-  }
-  if (apiUrl.endsWith('/')) {
-    apiUrl = apiUrl.slice(0, -1);
-  }
-
-  // 自动补全路径（如果不是完整路径）
-  if (!apiUrl.endsWith('/chat/completions')) {
-    apiUrl = `${apiUrl}${apiUrl.endsWith('/v1') ? '' : '/v1'}/chat/completions`;
-  }
 
   return { apiUrl, apiKey, model };
 }

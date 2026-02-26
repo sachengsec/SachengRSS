@@ -112,12 +112,12 @@ export function useRSS() {
   }, [translationCache]);
 
   // 添加翻译到缓存
-  const addTranslation = useCallback((itemId: string, title: string | null, paragraphs: Array<{ original: string; translated: string }>) => {
+  const addTranslation = useCallback((itemId: string, title: string | null, content: string) => {
     setTranslationCache(prev => ({
       ...prev,
       [itemId]: {
         title,
-        paragraphs,
+        content,
         translatedAt: Date.now()
       }
     }));

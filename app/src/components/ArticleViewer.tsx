@@ -27,7 +27,7 @@ interface ArticleViewerProps {
   translationCache: TranslationCache;
   onMarkAsRead: (itemId: string, isRead: boolean) => void;
   onToggleStar: (itemId: string) => void;
-  onAddTranslation: (itemId: string, title: string | null, paragraphs: Array<{ original: string; translated: string }>) => void;
+  onAddTranslation: (itemId: string, title: string | null, content: string) => void;
   onClearTranslation: (itemId: string) => void;
   onBack?: () => void;
   isMobile?: boolean;
@@ -114,16 +114,15 @@ export function ArticleViewer({
 
       // 翻译内容
       const contentToTranslate = item.content || item.description || '';
-      let paragraphs: Array<{ original: string; translated: string }> = [];
+      let translatedContent: string | null = null;
 
       if (contentToTranslate) {
-        const result = await translateContent(contentToTranslate, item.title);
+        translatedContent = await translateContent(contentToTranslate, item.title);
         // 如果翻译失败或返回 null（比如没配置 API Key），立刻中止
-        if (!result) {
+        if (!translatedContent) {
           setIsTranslating(false);
           return;
         }
-        paragraphs = result.paragraphs;
       } else {
         toast.error('没有可翻译的内容');
         setIsTranslating(false);
@@ -131,7 +130,7 @@ export function ArticleViewer({
       }
 
       // 保存到缓存
-      onAddTranslation(item.id, titleResult, paragraphs);
+      onAddTranslation(item.id, titleResult, translatedContent);
       setShowTranslation(true);
       toast.success('翻译完成');
     } catch (error) {
@@ -310,21 +309,12 @@ export function ArticleViewer({
 
           <Separator className="my-4" />
 
-          {/* 内容 - 双语对照显示 */}
+          {/* 内容 - 显示翻译或原文 */}
           {showTranslation && cachedTranslation ? (
-            <div className="space-y-6">
-              {cachedTranslation.paragraphs.map((para, idx) => (
-                <div key={idx} className="space-y-3">
-                  {/* 原文 */}
-                  <div className="text-muted-foreground text-sm border-l-2 border-muted pl-3">
-                    {para.original}
-                  </div>
-                  {/* 译文 */}
-                  <div className="text-foreground">
-                    {para.translated}
-                  </div>
-                </div>
-              ))}
+            <div className="prose prose-slate max-w-none">
+              <div className={`rss-content ${isMobile ? 'text-sm' : ''}`}>
+                {cachedTranslation.content}
+              </div>
             </div>
           ) : (
             <div className="prose prose-slate max-w-none">

@@ -31,10 +31,7 @@ export type ViewMode = 'all' | 'unread' | 'starred';
 export interface TranslationCache {
   [itemId: string]: {
     title: string | null;
-    paragraphs: Array<{
-      original: string;
-      translated: string;
-    }>;
+    content: string;
     translatedAt: number;
   };
 }

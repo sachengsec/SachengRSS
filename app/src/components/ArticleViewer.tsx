@@ -312,8 +312,12 @@ export function ArticleViewer({
           {/* 内容 - 显示翻译或原文 */}
           {showTranslation && cachedTranslation ? (
             <div className="prose prose-slate max-w-none">
-              <div className={`rss-content ${isMobile ? 'text-sm' : ''}`}>
-                {cachedTranslation.content}
+              <div className={`rss-content ${isMobile ? 'text-sm' : ''} space-y-4`}>
+                {cachedTranslation.content.split(/\n\n+/).map((paragraph, idx) => (
+                  <p key={idx} className="leading-relaxed">
+                    {paragraph.trim()}
+                  </p>
+                ))}
               </div>
             </div>
           ) : (

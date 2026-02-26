@@ -8,6 +8,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-7-646CFF)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC)](https://tailwindcss.com/)
+![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)
 
 ## 功能特性
 

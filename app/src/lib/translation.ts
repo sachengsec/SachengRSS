@@ -118,13 +118,26 @@ export async function translateContent(
 
     if (!response.ok) {
       let errorMessage = `API 错误 (${response.status})`;
-      try {
-        const errorData = await response.json();
-        console.error('Translation API error:', errorData);
-        errorMessage = errorData.error?.message || errorData.message || errorMessage;
-      } catch {
-        errorMessage = response.statusText || errorMessage;
+
+      // 处理常见 HTTP 错误
+      if (response.status === 503) {
+        errorMessage = 'AI 服务暂时不可用 (503)，请稍后重试';
+      } else if (response.status === 429) {
+        errorMessage = '请求过于频繁 (429)，请稍后再试';
+      } else if (response.status === 401) {
+        errorMessage = 'API Key 无效或已过期 (401)';
+      } else if (response.status === 500) {
+        errorMessage = 'AI 服务内部错误 (500)，请稍后重试';
+      } else {
+        try {
+          const errorData = await response.json();
+          console.error('Translation API error:', errorData);
+          errorMessage = errorData.error?.message || errorData.message || errorMessage;
+        } catch {
+          errorMessage = response.statusText || errorMessage;
+        }
       }
+
       toast.error(`翻译失败: ${errorMessage}`);
       return null;
     }
